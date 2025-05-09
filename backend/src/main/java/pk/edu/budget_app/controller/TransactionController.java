@@ -1,23 +1,41 @@
 package pk.edu.budget_app.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
+import pk.edu.budget_app.domain.EntryType;
 import pk.edu.budget_app.domain.Transaction;
-import pk.edu.budget_app.repository.TransactionRepository;
+import pk.edu.budget_app.service.UserService;
+import pk.edu.budget_app.service.TransactionService;
 
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/transactions")
 @RequiredArgsConstructor
 public class TransactionController {
 
-    private final TransactionRepository transactionRepository;
+    private final UserService userService;
+    private final TransactionService transactionService;
 
     @GetMapping
     public List<Transaction> getTransactions() {
-        return transactionRepository.findAll();
+        return transactionService.getAllTransactions();
     }
+
+    @GetMapping("/user/{userName}/{yearMonth}")
+    public List<Transaction> getTransactionsByMonth(
+            @PathVariable String userName,
+            @PathVariable @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth,
+            @RequestParam Optional<EntryType> transactionType) {
+
+        var user = userService.findUserByName(userName);
+
+        return transactionType
+                .map(type -> transactionService.getTransactionsByMonthAndType(user, yearMonth, type))
+                .orElseGet(() -> transactionService.getTransactionsByMonth(user, yearMonth));
+    }
+
 }

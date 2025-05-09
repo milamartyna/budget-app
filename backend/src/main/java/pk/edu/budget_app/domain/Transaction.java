@@ -4,6 +4,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -23,10 +24,11 @@ public class Transaction {
 
     @NonNull
     @Column(nullable = false)
-    private Double amount;
+    private BigDecimal amount;
 
     @NonNull
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private EntryType transactionType;
 
     @ManyToOne
@@ -39,8 +41,8 @@ public class Transaction {
     private LocalDateTime date;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Nullable
     private String description;

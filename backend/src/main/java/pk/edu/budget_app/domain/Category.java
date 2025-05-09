@@ -19,4 +19,8 @@ public class Category {
     @NonNull
     private String name;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
 }

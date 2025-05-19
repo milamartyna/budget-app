@@ -5,7 +5,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import pk.edu.budget_app.domain.EntryType;
 import pk.edu.budget_app.dto.TransactionDto;
-import pk.edu.budget_app.dto.TransactionMapper;
 import pk.edu.budget_app.service.UserService;
 import pk.edu.budget_app.service.TransactionService;
 
@@ -23,11 +22,7 @@ public class TransactionController {
 
     @GetMapping
     public List<TransactionDto> getTransactions() {
-        return transactionService
-                .getAllTransactions()
-                .stream()
-                .map(TransactionMapper::toDto)
-                .toList();
+        return transactionService.getAllTransactions();
     }
 
     @GetMapping("/user/{userName}/{yearMonth}")
@@ -38,19 +33,14 @@ public class TransactionController {
 
         var user = userService.getUserOrThrow(userName);
 
-        var transactions = transactionType
+        return transactionType
                 .map(type -> transactionService.getTransactionsByMonthAndType(user, yearMonth, type))
                 .orElseGet(() -> transactionService.getTransactionsByMonth(user, yearMonth));
-
-        return transactions.stream()
-                .map(TransactionMapper::toDto)
-                .toList();
     }
 
     @PostMapping
     public TransactionDto createTransaction(@RequestBody TransactionDto transaction) {
-        var transactionEntity = transactionService.saveAndCharge(transaction);
-        return TransactionMapper.toDto(transactionEntity);
+        return transactionService.saveAndCharge(transaction);
     }
 
 }

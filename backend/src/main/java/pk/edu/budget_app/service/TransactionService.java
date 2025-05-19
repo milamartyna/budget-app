@@ -7,6 +7,7 @@ import pk.edu.budget_app.domain.User;
 import pk.edu.budget_app.domain.EntryType;
 import pk.edu.budget_app.domain.Transaction;
 import pk.edu.budget_app.dto.TransactionDto;
+import pk.edu.budget_app.dto.TransactionMapper;
 import pk.edu.budget_app.repository.TransactionRepository;
 import pk.edu.budget_app.util.DateUtils;
 
@@ -26,7 +27,7 @@ public class TransactionService {
     private final UserService userService;
     private final CategoryService categoryService;
 
-    public Transaction saveAndCharge(TransactionDto dto) {
+    public TransactionDto saveAndCharge(TransactionDto dto) {
         var user = userService.getUserOrThrow(dto.getAccountName());
         var category = getCategory(user, dto);
         var amount = dto.getAmount();
@@ -48,23 +49,33 @@ public class TransactionService {
             .description(dto.getDescription())
             .build();
 
-        return transactionRepository.save(transaction);
+        return TransactionMapper.toDto(transactionRepository.save(transaction));
     }
 
-    public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
+    public List<TransactionDto> getAllTransactions() {
+        return transactionRepository.findAll().stream()
+                .map(TransactionMapper::toDto)
+                .toList();
     }
 
-    public List<Transaction> getTransactionsByMonth(User user, YearMonth yearMonth) {
+    public List<TransactionDto> getTransactionsByMonth(User user, YearMonth yearMonth) {
         var startMonth = beginningOfMonth(yearMonth);
         var endMonth = endOfMonth(yearMonth);
-        return transactionRepository.findByUserAndDateBetween(user, startMonth, endMonth);
+        return transactionRepository
+                .findByUserAndDateBetween(user, startMonth, endMonth)
+                .stream()
+                .map(TransactionMapper::toDto)
+                .toList();
     }
 
-    public List<Transaction> getTransactionsByMonthAndType(User user, YearMonth yearMonth, EntryType type) {
+    public List<TransactionDto> getTransactionsByMonthAndType(User user, YearMonth yearMonth, EntryType type) {
         var startMonth = beginningOfMonth(yearMonth);
         var endMonth = endOfMonth(yearMonth);
-        return transactionRepository.findByUserAndTransactionTypeAndDateBetween(user, type, startMonth, endMonth);
+        return transactionRepository
+                .findByUserAndTransactionTypeAndDateBetween(user, type, startMonth, endMonth)
+                .stream()
+                .map(TransactionMapper::toDto)
+                .toList();
     }
 
     private Category getCategory(User user, TransactionDto dto) {

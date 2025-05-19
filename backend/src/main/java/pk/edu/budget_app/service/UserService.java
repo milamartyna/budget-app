@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+// TODO - create userDto and have service layer operate on them not on jpa entity
 @Service
 @RequiredArgsConstructor
 public class UserService {

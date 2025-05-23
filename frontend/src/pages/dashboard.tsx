@@ -23,30 +23,40 @@ import AddIcon from "@mui/icons-material/Add";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {useUser} from "../hooks/users";
+import {useTransactions} from "../hooks/transactions";
 
 const drawerWidth = 240;
-
-/* FAKE DATA – zamienisz na fetch z backendu */
-const rows = [
-    { id: 1, date: "2025-05-01", description: "Salary", category: "Income", type: "INCOME", amount: 3200 },
-    { id: 2, date: "2025-05-03", description: "Groceries", category: "Food",   type: "EXPENSE", amount: -150 },
-    { id: 3, date: "2025-05-05", description: "Gas",       category: "Transport", type: "EXPENSE", amount: -60 },
-    { id: 4, date: "2025-05-10", description: "Freelance", category: "Income", type: "INCOME", amount: 650 },
-];
 
 export default function Dashboard() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const navigate = useNavigate();
 
-    const totalIncome  = rows.filter(r => r.type === "INCOME" ).reduce((s, r) => s +  r.amount, 0);
-    const totalExpense = rows.filter(r => r.type === "EXPENSE").reduce((s, r) => s + -r.amount, 0);
-    const balance      = totalIncome - totalExpense;
+    const { user, loading, error } = useUser("Alice");
+    const rows = useTransactions("Alice");
+
+    if (loading) return <div>Loading...</div>;
+    if (error || !user) return <div>Error loading user</div>;
+
+    const totalIncome = user.totalIncome;
+    const totalExpense = user.totalExpense;
+    const balance = totalIncome - totalExpense;
 
     const columns: GridColDef[] = [
-        { field: "date",        headerName: "Date",        width: 110 },
+        { field: "date",        headerName: "Date",        width: 150,   renderCell: (params) => {
+                const date = new Date(params.value);
+                const formatted = date.toLocaleString(undefined, {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+                return <>{formatted}</>;
+            } },
         { field: "description", headerName: "Description", flex: 1, minWidth: 160 },
-        { field: "category",    headerName: "Category",    width: 120 },
-        { field: "type",        headerName: "Type",        width: 100,
+        { field: "categoryName",    headerName: "Category",    width: 120 },
+        { field: "transactionType",        headerName: "Type",        width: 100,
             renderCell: p => <Typography color={p.value === "INCOME" ? "success.main" : "error.main"}>{p.value}</Typography> },
         { field: "amount",      headerName: "Amount",      width: 130, type: "number",
             renderCell: p => <Typography color={p.value >= 0 ? "success.main" : "error.main"}>
@@ -127,7 +137,6 @@ export default function Dashboard() {
     );
 }
 
-/* Mała pomocnicza karta */
 function SummaryCard({ icon, title, value, color }:
                          { icon: React.ReactNode; title: string; value: number; color: string }) {
     return (

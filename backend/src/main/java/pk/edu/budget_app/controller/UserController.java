@@ -23,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping("/{userName}")
-    public User getUserByNAme(@PathVariable String userName) {
+    public User getUserByName(@PathVariable String userName) {
         return userService.getUserOrThrow(userName);
     }
 }

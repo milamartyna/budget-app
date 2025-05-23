@@ -58,6 +58,14 @@ public class TransactionService {
                 .toList();
     }
 
+    public List<TransactionDto> getAllTransactionsForUser(User user) {
+        return transactionRepository
+                .findByUser(user)
+                .stream()
+                .map(TransactionMapper::toDto)
+                .toList();
+    }
+
     public List<TransactionDto> getTransactionsByMonth(User user, YearMonth yearMonth) {
         var startMonth = beginningOfMonth(yearMonth);
         var endMonth = endOfMonth(yearMonth);

@@ -4,9 +4,11 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import pk.edu.budget_app.domain.*;
 import pk.edu.budget_app.dto.TransactionDto;
+import pk.edu.budget_app.dto.UserLoginDto;
 import pk.edu.budget_app.repository.*;
 import org.springframework.context.annotation.Configuration;
 import pk.edu.budget_app.service.TransactionService;
+import pk.edu.budget_app.service.UserService;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,6 +22,7 @@ import static pk.edu.budget_app.util.DateUtils.now;
 public class DataInitializer {
 
     private final UserRepository userRepository;
+    private final UserService userService;
     private final CategoryRepository categoryRepository;
     private final TransactionService transactionService;
     private final TransactionRepository transactionRepository;
@@ -32,8 +35,8 @@ public class DataInitializer {
         userRepository.deleteAll();
 
         // Create users
-        User alice = userRepository.save(User.builder().name("Alice").build());
-        User bob = userRepository.save(User.builder().name("Bob").build());
+        User alice = userService.createUser(UserLoginDto.builder().name("Alice").password("a123").build());
+        User bob = userService.createUser(UserLoginDto.builder().name("Bob").password("b123").build());
 
         // Create categories
         categoryRepository.save(Category.builder().name("Food").user(alice).build());

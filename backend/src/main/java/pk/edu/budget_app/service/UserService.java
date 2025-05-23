@@ -2,21 +2,36 @@ package pk.edu.budget_app.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import pk.edu.budget_app.domain.User;
+import pk.edu.budget_app.dto.UserLoginDto;
 import pk.edu.budget_app.repository.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-// TODO - create userDto and have service layer operate on them not on jpa entity
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public User createUser(UserLoginDto dto) {
+        if (userRepository.findByName(dto.getName()).isPresent()) {
+            throw new IllegalStateException("Username already exists: " + dto.getName());
+        }
+
+        var user = User.builder()
+                .name(dto.getName())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .build();
+
+        return userRepository.save(user);
+    }
 
     public List<User> findAll() {
         return userRepository.findAll();

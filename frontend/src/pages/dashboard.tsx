@@ -25,16 +25,20 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {useUser} from "../hooks/users";
 import {useTransactions} from "../hooks/transactions";
+import {useAuth} from "../hooks/auth";
 
 const drawerWidth = 240;
 
 export default function Dashboard() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const navigate = useNavigate();
+    const { logout, loggedInUser } = useAuth();
 
-    const { user, loading, error } = useUser("Alice");
-    const rows = useTransactions("Alice");
+    const userName = loggedInUser();
+    const { user, loading, error } = useUser(userName ?? "");
+    const rows = useTransactions(userName ?? "");
 
+    if (!userName) return <div>Not logged in</div>;
     if (loading) return <div>Loading...</div>;
     if (error || !user) return <div>Error loading user</div>;
 
@@ -91,8 +95,19 @@ export default function Dashboard() {
                                 onClick={() => setMobileOpen(!mobileOpen)}>
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" noWrap>Dashboard</Typography>
+
+                    <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
+                        Hello, {user.name}
+                    </Typography>
+
+                    <IconButton color="inherit" onClick={() => {
+                        logout()
+                        window.location.href = "/login";
+                    }}>
+                        <Typography variant="body2">Logout</Typography>
+                    </IconButton>
                 </Toolbar>
+
             </AppBar>
 
             {/* Drawer */}

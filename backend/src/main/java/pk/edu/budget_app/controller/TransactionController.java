@@ -25,17 +25,21 @@ public class TransactionController {
         return transactionService.getAllTransactions();
     }
 
-    @GetMapping("/user/{userName}/{yearMonth}")
-    public List<TransactionDto> getTransactionsByMonth(
+    @GetMapping("/user/{userName}")
+    public List<TransactionDto> getTransactions(
             @PathVariable String userName,
-            @PathVariable @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth,
             @RequestParam Optional<EntryType> transactionType) {
 
         var user = userService.getUserOrThrow(userName);
 
-        return transactionType
-                .map(type -> transactionService.getTransactionsByMonthAndType(user, yearMonth, type))
-                .orElseGet(() -> transactionService.getTransactionsByMonth(user, yearMonth));
+        if (yearMonth != null) {
+            return transactionType
+                    .map(type -> transactionService.getTransactionsByMonthAndType(user, yearMonth, type))
+                    .orElseGet(() -> transactionService.getTransactionsByMonth(user, yearMonth));
+        }
+
+        return transactionService.getAllTransactionsForUser(user);
     }
 
     @PostMapping

@@ -80,6 +80,10 @@ export default function Dashboard() {
                     <ListItemIcon><AddIcon /></ListItemIcon>
                     <ListItemText primary="Add transaction" />
                 </ListItem>
+                <ListItem button onClick={() => navigate("/categories/add")}>
+                    <ListItemIcon><AddIcon /></ListItemIcon>
+                    <ListItemText primary="Add category" />
+                </ListItem>
             </List>
         </Box>
     );

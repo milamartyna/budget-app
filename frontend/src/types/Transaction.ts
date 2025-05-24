@@ -4,7 +4,7 @@ export type Transaction = {
     amount: number;
     transactionType: TransactionType;
     accountName: string;
-    categoryName: string;
+    categoryName: any;
     description: string;
     date: string;
 }

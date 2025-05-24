@@ -76,7 +76,7 @@ export default function Dashboard() {
                 <ListItem button onClick={() => navigate("/dashboard")}>
                     <ListItemText primary="Dashboard" />
                 </ListItem>
-                <ListItem button onClick={() => navigate("/transactions/new")}>
+                <ListItem button onClick={() => navigate("/transactions/add")}>
                     <ListItemIcon><AddIcon /></ListItemIcon>
                     <ListItemText primary="Add transaction" />
                 </ListItem>

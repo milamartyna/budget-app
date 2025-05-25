@@ -24,9 +24,9 @@ import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useUser} from "../hooks/users";
 import {useAuth} from "../hooks/auth";
-import {create_new_transaction} from "../api/TransactionService";
 import {Transaction, TransactionType} from "../types/Transaction";
 import {Category, getCategories} from "../api/CategoryService";
+import {addTransaction} from "../api/TransactionService";
 
 const drawerWidth = 240;
 
@@ -52,20 +52,20 @@ export default function NewTransaction() {
     }, [userName]);
 
     const onSubmit = async (e: React.FormEvent) => {
-        if (userName) {
-            const transaction: Transaction = {
-                amount: parseFloat(amount),
-                transactionType: type as TransactionType,
-                accountName: userName,
-                categoryName: category,
-                description: description,
-                date: date
-            };
-            e.preventDefault();
-            const success = await create_new_transaction(transaction);
-            console.log(success);
-            if (success) navigate("/dashboard");
-        }
+        if (!userName) return;
+
+        const transaction: Transaction = {
+            amount: parseFloat(amount),
+            transactionType: type as TransactionType,
+            accountName: userName,
+            description,
+            date,
+            categoryName: category.trim() !== "" ? category : null
+        };
+        e.preventDefault();
+        const success = await addTransaction(transaction);
+        console.log(success);
+        if (success) navigate("/dashboard");
     };
 
     if (!userName) return <div>Not logged in</div>;

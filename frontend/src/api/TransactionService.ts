@@ -8,6 +8,6 @@ export const getTransactions = async(userName: string)=> {
     return response as Array<Transaction>;
 }
 
-export async function create_new_transaction(transaction: Transaction){
+export async function addTransaction(transaction: Transaction){
     return await http.post("/transactions", transaction);
 }

@@ -16,9 +16,11 @@ import pk.edu.budget_app.repository.TransactionRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -166,4 +168,58 @@ public class TransactionServiceTest {
         verify(transactionRepository).delete(transaction);
     }
 
+    @Test
+    void getAllTransactions_shouldReturnMappedDtos() {
+        var tx1 = Transaction.builder()
+                .id(1L)
+                .amount(BigDecimal.TEN)
+                .transactionType(EntryType.INCOME)
+                .date(LocalDateTime.now())
+                .user(user)
+                .build();
+
+        var tx2 = Transaction.builder()
+                .id(2L)
+                .amount(BigDecimal.ONE)
+                .transactionType(EntryType.EXPENSE)
+                .date(LocalDateTime.now())
+                .user(user)
+                .build();
+
+        when(transactionRepository.findAll()).thenReturn(List.of(tx1, tx2));
+
+        var result = sut.getAllTransactions();
+
+        assertThat(result.size()).isEqualTo(2);
+        verify(transactionRepository).findAll();
+    }
+
+
+    @Test
+    void getAllTransactionsForUser_shouldReturnUserTransactions() {
+        var tx1 = Transaction.builder()
+                .id(1L)
+                .amount(BigDecimal.TEN)
+                .transactionType(EntryType.INCOME)
+                .date(LocalDateTime.now())
+                .user(user)
+                .build();
+        when(transactionRepository.findByUser(eq(user)))
+                .thenReturn(List.of(tx1));
+
+        var result = sut.getAllTransactionsForUser(user);
+
+        assertThat(result.size()).isEqualTo(1);
+        verify(transactionRepository).findByUser(user);
+    }
+
+    @Test
+    void deleteTransaction_shouldThrowIfTransactionNotFound() {
+        when(userService.getUserOrThrow(eq("john"))).thenReturn(user);
+        when(transactionRepository.findById(eq(999L))).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> sut.deleteTransaction(999L, "john"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Transaction not found");
+    }
 }

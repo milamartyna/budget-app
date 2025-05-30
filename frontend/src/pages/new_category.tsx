@@ -10,22 +10,24 @@ import {
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../hooks/auth";
-import {addCategory} from "../api/CategoryService";
+import {useCategory} from "../hooks/categories";
 
 export default function NewCategory() {
     const navigate = useNavigate();
     const { loggedInUser } = useAuth();
+    const { addCategory, error } = useCategory();
 
     const userName = loggedInUser();
-
     const [name, setName] = useState("");
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!userName) return;
 
-        await addCategory(userName, name);
-        navigate("/dashboard");
+        const success = await addCategory(userName, name);
+        if (success) {
+            navigate("/dashboard");
+        }
     };
 
     return (
@@ -49,6 +51,13 @@ export default function NewCategory() {
                                         required
                                     />
                                 </Grid>
+                                {error && (
+                                    <Grid item xs={12}>
+                                        <Typography color="error" align="center">
+                                            {error}
+                                        </Typography>
+                                    </Grid>
+                                )}
 
                                 <Grid item xs={12}>
                                     <Box textAlign="right">

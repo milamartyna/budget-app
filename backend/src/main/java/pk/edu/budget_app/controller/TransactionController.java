@@ -47,4 +47,9 @@ public class TransactionController {
         return transactionService.saveAndCharge(transaction);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteTransaction(@PathVariable Long id, @RequestParam String accountName) {
+        transactionService.deleteTransaction(id, accountName);
+    }
+
 }

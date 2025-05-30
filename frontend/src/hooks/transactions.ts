@@ -8,12 +8,7 @@ export function useTransactions(userName: string) {
     useEffect(() => {
         getTransactions(userName)
             .then((data) =>
-                setTransactions(
-                    data.map((t, i) => ({
-                        ...t,
-                        id: i, // DataGrid requires a unique `id` field
-                    }))
-                )
+                setTransactions(data)
             )
             .catch(console.error);
     }, [userName]);

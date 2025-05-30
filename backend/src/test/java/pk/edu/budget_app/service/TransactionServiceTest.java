@@ -143,4 +143,27 @@ public class TransactionServiceTest {
                         eq(from), eq(to));
     }
 
+    @Test
+    void deleteTransaction_shouldReverseUserBalanceAndRemoveTransaction() {
+        // given
+        var transaction = Transaction.builder()
+                .id(100L)
+                .amount(BigDecimal.valueOf(75))
+                .transactionType(EntryType.EXPENSE)
+                .user(user)
+                .date(NOW)
+                .build();
+
+        when(userService.getUserOrThrow(eq("john"))).thenReturn(user);
+        when(transactionRepository.findById(eq(100L))).thenReturn(Optional.of(transaction));
+
+        // when
+        sut.deleteTransaction(100L, "john");
+
+        // then
+        verify(userService).subtractExpense(user, BigDecimal.valueOf(75));
+        verify(userService, never()).subtractIncome(any(), any());
+        verify(transactionRepository).delete(transaction);
+    }
+
 }

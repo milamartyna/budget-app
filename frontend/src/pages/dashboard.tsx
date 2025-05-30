@@ -2,9 +2,10 @@ import {
     Box,
     Card,
     CardContent,
-    Grid,
+    Grid, IconButton,
     Typography,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import PaidIcon from "@mui/icons-material/Paid";
 import MoneyOffCsredIcon from "@mui/icons-material/MoneyOffCsred";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
@@ -12,6 +13,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import {useUser} from "../hooks/users";
 import {useTransactions} from "../hooks/transactions";
 import {useAuth} from "../hooks/auth";
+import {deleteTransaction} from "../api/TransactionService";
 
 export default function Dashboard() {
 
@@ -29,8 +31,20 @@ export default function Dashboard() {
     const totalExpense = user.totalExpense;
     const balance = totalIncome - totalExpense;
 
+    const handleDelete = async (id: string) => {
+        if (window.confirm("Are you sure you want to delete this transaction?")) {
+            try {
+                await deleteTransaction(id, userName);
+                console.log(`Deleted transaction with ID: ${id}`);
+                window.location.reload();
+            } catch (err) {
+                console.error("Failed to delete transaction", err);
+            }
+        }
+    };
+
     const columns: GridColDef[] = [
-        { field: "date",        headerName: "Date",        width: 150,   renderCell: (params) => {
+        { field: "date", headerName: "Date", width: 150, renderCell: (params) => {
                 const date = new Date(params.value);
                 const formatted = date.toLocaleString(undefined, {
                     year: "numeric",
@@ -40,15 +54,26 @@ export default function Dashboard() {
                     minute: "2-digit",
                 });
                 return <>{formatted}</>;
-            } },
+            }},
         { field: "description", headerName: "Description", flex: 1, minWidth: 160 },
-        { field: "categoryName",    headerName: "Category",    width: 120 },
-        { field: "transactionType",        headerName: "Type",        width: 100,
+        { field: "categoryName", headerName: "Category", width: 120 },
+        { field: "transactionType", headerName: "Type", width: 100,
             renderCell: p => <Typography color={p.value === "INCOME" ? "success.main" : "error.main"}>{p.value}</Typography> },
-        { field: "amount",      headerName: "Amount",      width: 130, type: "number",
+        { field: "amount", headerName: "Amount", width: 130, type: "number",
             renderCell: p => <Typography color={p.value >= 0 ? "success.main" : "error.main"}>
                 {p.value.toFixed(2)}
             </Typography> },
+        { field: "actions", headerName: "", width: 60, sortable: false,
+            renderCell: (params) => (
+                <IconButton
+                    size="small"
+                    color="error"
+                    onClick={() => handleDelete(params.row.id)}
+                >
+                    <DeleteIcon fontSize="small" />
+                </IconButton>
+            )
+        }
     ];
 
 

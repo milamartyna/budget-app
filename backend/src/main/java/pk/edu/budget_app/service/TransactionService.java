@@ -52,6 +52,25 @@ public class TransactionService {
         return TransactionMapper.toDto(transactionRepository.save(transaction));
     }
 
+    public void deleteTransaction(Long id, String accountName) {
+        var user = userService.getUserOrThrow(accountName);
+
+        var transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Transaction not found with id: " + id));
+
+        var amount = transaction.getAmount();
+        var type = transaction.getTransactionType();
+
+        switch (type) {
+            case INCOME -> userService.subtractIncome(user, amount);
+            case EXPENSE -> userService.subtractExpense(user, amount);
+            default -> throw new IllegalArgumentException("Unsupported transaction type: " + type);
+        }
+
+        transactionRepository.delete(transaction);
+    }
+
+
     public List<TransactionDto> getAllTransactions() {
         return transactionRepository.findAll().stream()
                 .map(TransactionMapper::toDto)

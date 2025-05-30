@@ -8,7 +8,10 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "category")
+@Table(
+        name = "category",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "name"})
+)
 public class Category {
 
     @Id

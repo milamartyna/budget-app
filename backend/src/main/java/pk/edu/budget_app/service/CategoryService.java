@@ -25,6 +25,12 @@ public class CategoryService {
     }
 
     public Category addCategory(CategoryDto dto, User user) {
+        var existing = categoryRepository.findByUserAndName(user, dto.getName());
+        if (existing.isPresent()) {
+            throw new IllegalArgumentException(
+                    "Category with name '" + dto.getName() + "' already exists for user '" + user.getName() + "'."
+            );}
         return categoryRepository.save(CategoryMapper.toEntity(dto, user));
     }
+
 }

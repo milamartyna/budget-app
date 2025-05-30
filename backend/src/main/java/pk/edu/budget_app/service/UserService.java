@@ -55,4 +55,14 @@ public class UserService {
         user.setTotalIncome(user.getTotalIncome().add(amount));
         userRepository.save(user);
     }
+
+    public void subtractExpense(User user, BigDecimal amount) {
+        user.setTotalExpense(user.getTotalExpense().subtract(amount));
+        userRepository.save(user);
+    }
+
+    public void subtractIncome(User user, BigDecimal amount) {
+        user.setTotalIncome(user.getTotalIncome().subtract(amount));
+        userRepository.save(user);
+    }
 }

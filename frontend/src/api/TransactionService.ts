@@ -11,3 +11,7 @@ export const getTransactions = async(userName: string)=> {
 export async function addTransaction(transaction: Transaction){
     return await http.post("/transactions", transaction);
 }
+
+export async function deleteTransaction(id: string, accountName: string) {
+    return await http.delete(`/transactions/${id}?accountName=${encodeURIComponent(accountName)}`);
+}

@@ -7,11 +7,14 @@ import pk.edu.budget_app.domain.EntryType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data // @Value would provide immutability (maybe change?)
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransactionDto {
+
+    @Nullable
+    private Long id;
 
     @NonNull
     private BigDecimal amount;

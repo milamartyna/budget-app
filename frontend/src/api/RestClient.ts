@@ -32,4 +32,8 @@ function post<T, B = unknown>(url: string, body: B, cfg?: AxiosRequestConfig) {
     return client.post<T>(url, body, cfg).then((r) => r.data);
 }
 
-export const http = { get, post };
+function del<T>(url: string, cfg?: AxiosRequestConfig) {
+    return client.delete<T>(url, cfg).then((r) => r.data);
+}
+
+export const http = { get, post, delete: del };

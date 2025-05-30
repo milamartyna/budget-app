@@ -6,6 +6,7 @@ public class TransactionMapper {
 
     public static TransactionDto toDto(Transaction t) {
         return TransactionDto.builder()
+                .id(t.getId())
                 .amount(t.getAmount())
                 .transactionType(t.getTransactionType())
                 .accountName(t.getUser().getName())

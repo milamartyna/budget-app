@@ -12,7 +12,14 @@ git clone https://github.com/milamartyna/budget-app.git
 cd buget-app
 ```
 
-#### 2️⃣ Build and run everything with Docker Compose
+#### 2️⃣  Build backend JAR
+Before running Docker Compose, you must first build the backend JAR file:
+```bash
+cd backend
+gradle bootRun
+```
+
+#### 3️⃣ Build and run everything with Docker Compose
 ```bash
 docker-compose up --build
 ```
@@ -30,6 +37,8 @@ Backend API & Swagger docs → http://localhost:8080/swagger-ui/index.html
 - Docker installed
 
 - Docker Compose installed
+  
+- Java & Gradle installed (for local backend build)
 
 ### 📦 Build Artifacts
 - **Backend Dockerfile** → builds the JAR and runs it.

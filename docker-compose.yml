@@ -5,30 +5,25 @@ services:
     container_name: budget-db
     environment:
       POSTGRES_DB: budgetdb
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
   backend:
-    build:
-      context: ./backend
+    build: ./backend
     container_name: budget-backend
-    environment:
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
+    env_file:
+      - .env
     ports:
       - "8080:8080"
     depends_on:
       - postgres
 
   frontend:
-    build:
-      context: ./frontend
+    build: ./frontend
     container_name: budget-frontend
     ports:
       - "3000:80"

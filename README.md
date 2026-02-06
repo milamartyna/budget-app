@@ -9,26 +9,28 @@ A simple budgeting web app for tracking income, expenses, and balance, built wit
 #### 1️⃣ Clone the repository
 ```bash
 git clone https://github.com/milamartyna/budget-app.git
-cd buget-app
+cd budget-app
 ```
 
-#### 2️⃣  Build backend JAR
-Before running Docker Compose, you must first build the backend JAR file:
+#### 2️⃣ Create environment variables
+Create a .env file based on the example:
+
 ```bash
-cd backend
-gradle bootRun
+cp .env.example .env
 ```
 
-#### 3️⃣ Build and run everything with Docker Compose
+The .env file is ignored by Git and contains only local configuration.
+
+#### 3️⃣ Build and run the application
 ```bash
 docker-compose up --build
 ```
-This will:\
-✅ start the backend \
-✅ start the frontend \
-✅ start the Postgres database 
+This will:
+- start the backend 
+- start the frontend 
+- start the Postgres database 
 
-#### 3️⃣ Access the application
+#### 4️⃣ Access the application
 Frontend app → http://localhost:3000
 
 Backend API & Swagger docs → http://localhost:8080/swagger-ui/index.html
@@ -37,8 +39,6 @@ Backend API & Swagger docs → http://localhost:8080/swagger-ui/index.html
 - Docker installed
 
 - Docker Compose installed
-  
-- Java & Gradle installed (for local backend build)
 
 ### 📦 Build Artifacts
 - **Backend Dockerfile** → builds the JAR and runs it.
@@ -46,6 +46,25 @@ Backend API & Swagger docs → http://localhost:8080/swagger-ui/index.html
 - **Frontend Dockerfile** → builds the React app and serves it via Nginx.
 
 - **docker-compose.yml** → orchestrates backend, frontend, and Postgres containers.
+
+## 🧪 Development Notes
+
+### Initial demo data
+
+On application startup, the backend loads **demo data** for development purposes:
+
+- sample users
+- categories
+- income and expense transactions
+
+This is implemented in the `DataInitializer` class.
+
+⚠️ **Important:**
+
+- the initializer clears the database on startup
+- it is intended for local development and demos only
+- it should be disabled or removed for production use
+
 
 ### ✨ Features
 ✅ User registration + login (JWT-secured) \
